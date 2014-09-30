@@ -1,6 +1,7 @@
 import re  # parsing HTML with regexes LIKE A BOSS.
 
 from django.utils.html import escape
+from django.conf import settings
 
 from wagtail.wagtailcore.whitelist import Whitelister
 from wagtail.wagtailcore.models import Page
@@ -14,6 +15,9 @@ from wagtail.wagtailimages.models import get_image_model
 from wagtail.wagtailimages.formats import get_image_format
 
 from wagtail.wagtailcore import hooks
+
+CUSTOM_EMBED_HANDLERS = getattr(settings, "WAGTAIL_CUSTOM_EMBED_HANDLERS", {})
+CUSTOM_LINK_HANDLERS = getattr(settings, "WAGTAIL_CUSTOM_LINK_HANDLERS", {})
 
 
 # Define a set of 'embed handlers' and 'link handlers'. These handle the translation
@@ -151,11 +155,12 @@ EMBED_HANDLERS = {
     'image': ImageEmbedHandler,
     'media': MediaEmbedHandler,
 }
+EMBED_HANDLERS.update(CUSTOM_EMBED_HANDLERS)
 LINK_HANDLERS = {
     'page': PageLinkHandler,
     'document': DocumentLinkHandler,
 }
-
+LINK_HANDLERS.update(CUSTOM_LINK_HANDLERS)
 
 class DbWhitelister(Whitelister):
     """
